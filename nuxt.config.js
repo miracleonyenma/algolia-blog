@@ -17,6 +17,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~/assets/css/tailwind.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -53,6 +54,11 @@ export default {
   content: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
+
+  /* Our InstantSearch code uses ES modules, yet it needs to be executed in Node.js.
+  For that reason, we need to let Nuxt know that those files should be transpiled for a Node usage.
+  For that, we add the following configuration to nuxt.config.js */
   build: {
+    transpile: ['vue-instantsearch', 'instantsearch.js/es'],
   }
 }
