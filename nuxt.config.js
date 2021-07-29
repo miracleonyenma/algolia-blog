@@ -22,13 +22,16 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/vue-instantsearch'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: ['@nuxtjs/tailwindcss'],
+  // add module for nuxt-content-algolia
+  buildModules: ['@nuxtjs/tailwindcss', 'nuxt-content-algolia'],
+
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
@@ -52,6 +55,38 @@ export default {
 
   // Content module configuration: https://go.nuxtjs.dev/config-content
   content: {},
+
+  // Automatically (during npm run generate) sync content
+  // stored in your project with nuxt content to an Algolia index.
+  nuxtContentAlgolia: {
+    appId: 'TG6KE2AI62',
+    // !IMPORTANT secret key should always be an environment variable
+    // this is not your search only key but the key that grants access to modify the index
+    apiKey: '0d8988055ef8a562f08a9c17beadc0a1',
+
+    // relative to content directory
+    // each path get's its own index
+    paths: [
+      {
+        name: 'articles',
+        // optional (will use name if index not specified)
+        index: process.env.ALGOLIA_INDEX || 'blog',
+        fields: ['title', 'description', 'body', 'bodyPlainText', 'tags'],
+      },
+    ],
+  },
+
+  // hook to strip out the markdown characters from the body plain text
+  // before sending it to the Algolia index
+  hooks: {
+    'content:file:beforeInsert': (document) => {
+      const removeMd = require('remove-markdown');
+      if (document.extension == '.md') {
+        document.bodyPlainText = removeMd(document.text);
+      }
+    }
+  },
+
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
 
